@@ -38,7 +38,7 @@ Diffusion of Thought (DoT) puts an auto-regressive spin onto diffusion models by
 See the [Diffusion of Thought](https://github.com/HKUNLP/diffusion-of-thoughts) repo for more. They were able to show interesting results like diffusion models self-correcting errors they made when solving math problems from GSM8K.   
 
 # maybe
-
+- [ ] add comments
 - [ ] add DoT support 
 
 # references

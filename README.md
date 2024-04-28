@@ -14,7 +14,7 @@ To train on FashionMNIST, run ```python image.py```
 
 To train on text datasets, run ```python text.py --dataset tripadvisor``` 
 
-*Note that tripadvisor is the only text dataset supported rn*
+*NOTE: tripadvisor is the only text dataset supported rn*
 
 # diffusion models
 

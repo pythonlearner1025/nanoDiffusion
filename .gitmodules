@@ -1,0 +1,3 @@
+[submodule "diffusion-of-thoughts"]
+	path = diffusion-of-thoughts
+	url = https://github.com/HKUNLP/diffusion-of-thoughts

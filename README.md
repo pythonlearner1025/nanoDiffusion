@@ -1,5 +1,7 @@
 # nanoDiffusion 
 
+*NOTE: this repo is incomplete* 
+
 A nanoscale implementation of diffusion models, with experimental code to explore reasoning in text diffusion models.
 
 ```textgen.py``` is a minimal implementation of Apple's [ml-planner](https://github.com/apple/ml-planner?tab=readme-ov-file)
@@ -26,7 +28,7 @@ We only care about learning the reverse process: ultimately, we want a generativ
 
 I adopt ml-planner's VAE approach for text diffusion, where the diffusion process happens not over raw text samples but over compressed latents of text. ```Bert-Base``` is used as the encoding model to compress text into latents, and ```GPT2-Decoder``` is used as the decoding model to autoregressively decode latents back into text.
 
-Diffusion of Thought (DoT) puts an auto-regressive spin onto diffusion models by concatenating diffused outputs R1 with conditioning text C to form C' = [C, R1]. The output of C' is then R2, and C'' = [C, R1, R2], etc. The R's can be interpreted as reasoning "thoughts" the model chains, much like how thoughts are chained in Chain-of-Thought reasoning. 
+Diffusion of Thought (DoT) puts an auto-regressive spin onto diffusion models by concatenating diffused outputs R1 with conditioning text C to form C' = [C, R1]. The output of C' is then R2, and C'' = [C, R1, R2], etc. The R's can be interpreted as reasoning "thoughts" the model chains, much like how thoughts are chained in Chain-of-Thought reasoning in LLMs. 
 
 **Incomplete ideas on DoT**
 - chain of thought reasoning is equivalent to learning good state-action trajectories, which is already implicit in diffusion model's markovian formulation
@@ -37,7 +39,7 @@ See the [Diffusion of Thought](https://github.com/HKUNLP/diffusion-of-thoughts) 
 
 # maybe
 
-- [ ] add DoT support https://github.com/HKUNLP/diffusion-of-thoughts
+- [ ] add DoT support 
 
 # references
 - [ml-planner](https://arxiv.org/abs/2306.02531)

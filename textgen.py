@@ -4,7 +4,6 @@ from dataloader import load_winogrande, load_gsm8k, load_tripadvisor
 from transformers import GPT2Tokenizer, GPT2LMHeadModel, BertTokenizer
 from tqdm import tqdm
 
-import random
 import torch
 import os
 
@@ -264,8 +263,9 @@ if __name__ == '__main__':
         trainset, testset = load_winogrande()
     elif dataset == 'gsm8k':
         trainset, testset = load_gsm8k()
+    # only tripadvisor summarization is supported
     elif dataset == 'tripadvisor':
         trainset, testset = load_tripadvisor()
-        train_vae(trainset, testset)
-
+    
+    train_vae(trainset, testset)
     train_conditional_diffusion(trainset, testset)

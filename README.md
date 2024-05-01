@@ -11,11 +11,16 @@ A nanoscale implementation of diffusion models, with experimental code to explor
 # how to run
 
 First, install dependencies: 
+
 ```pip install -r requirements.txt```
 
-To train on FashionMNIST, run ```python image.py```
+To train on FashionMNIST, run 
 
-To train on text datasets, run ```python text.py --dataset tripadvisor``` 
+```python image.py```
+
+To train on text datasets, run 
+
+```python text.py --dataset tripadvisor``` 
 
 The default accelerator device is ```cuda```. If you don't have a CUDA gpu, set device to ```cpu```
 

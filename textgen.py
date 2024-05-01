@@ -151,25 +151,29 @@ from models.diffusion import DDIM
 from models.dit import DiT
 import torch.nn.functional as F
 
+BS = 16
 device = 'cuda'
 epochs = 10
 eval_inter = 5
 save_inter = 1
 cond_model_name = 't5-small'
-cond_embedding_dim = 379904 if 't5-small' else 569856
+cond_embedding_dim = 131072 if 't5-small' else 131072
 load_ckpt = 1
 diffusion_steps = T = 300
 
 def get(vae, noiser, batch):
+    #print(batch)
     input_ids_bert = batch[0].to(device)
     input_ids_enc = noiser.noise(input_ids_bert)
     input_ids_enc = input_ids_enc
     enc = vae.encoder_mean(input_ids_enc)
-    classes = batch[3]
+    #print(batch[0][0])
+    classes = bert_tokenizer.batch_decode(batch[0])
     enc = enc.permute([0,2,1]).unsqueeze(1)
     return enc, classes
 
 def train_conditional_diffusion(trainset, testset):
+    
     encoder = BertEncoder(ENC_MODEL, LATENT_SIZE, LATENT_CODES)
     decoder = GPT2Decoder(DEC_MODEL, LATENT_SIZE, LATENT_CODES, SENTENCE_LEN, LOAD_DEC, N_HEADS, SHARE_GPTS)
     vae = VAE(encoder, decoder, H_NOISER, H_NOISER_RATIO, H_TANH)
@@ -177,7 +181,8 @@ def train_conditional_diffusion(trainset, testset):
     if load_ckpt:
         print('loading from ckpt')
         vae_ckpt_path = sorted([f for f in os.listdir(SAVE_DIR) if f.startswith('vae')])[-1]
-        vae = VAE.load_state_dict(os.path.join(SAVE_DIR, vae_ckpt_path), map_location='cpu')
+        vae_ckpt = torch.load(os.path.join(SAVE_DIR, vae_ckpt_path))
+        vae.load_state_dict(vae_ckpt)
 
     vae = vae.to(device) 
     vae.eval()
@@ -197,12 +202,17 @@ def train_conditional_diffusion(trainset, testset):
 
     def sample():
         batch,cond_txt = get(vae, noiser, next(iter(test_data)))
-        cond_ids = [cond_tokenizer.encode(txt) for txt in cond_txt]
-        batch, cond = batch.to(device), torch.tensor(cond_ids).to(device) 
+        cond_inputs = cond_tokenizer(
+            cond,
+            padding='max_length',
+            truncation=True,
+            max_length=SENTENCE_LEN,
+            return_tensors='pt'
+        )
+        cond_ids = cond_inputs['input_ids'].to(device) 
         shape = batch.shape
-        out = cond_model(cond)
-        # we are finetuning conditioning encoding model too
-        cond = out.last_hidden_state.reshape(cond.shape[0],-1)
+        cond = cond_model(input_ids=cond_ids).last_hidden_state.reshape(cond_ids.shape[0], -1) 
+        batch, cond = batch.to(device), torch.tensor(cond_ids).to(device)
         samples = diffusion.ddim_sample(cond, shape=shape, steps=30)
         input_sentence, predict_sentence = [], []
         for i in range(len(samples)):
@@ -226,10 +236,20 @@ def train_conditional_diffusion(trainset, testset):
         for i, batch in enumerate(train_data):
             batch, cond = get(vae, noiser, batch)
 
-            cond_ids = [cond_tokenizer.encode(txt) for txt in cond]
+            cond_inputs = cond_tokenizer(
+                cond,
+                padding='max_length',
+                truncation=True,
+                max_length=SENTENCE_LEN,
+                return_tensors='pt'
+            )
+            
+            cond_ids = cond_inputs['input_ids'].to(device)
+            #cond_mask = cond_inputs['attention_mask'].to(device)
+
             batch, cond = batch.to(device), torch.tensor(cond_ids).to(device)
             
-            cond = cond_model(cond).last_hidden_state.reshape(cond.shape[0], -1)
+            cond = cond_model(input_ids=cond_ids).last_hidden_state.reshape(cond_ids.shape[0], -1)
 
             t = torch.randint(0, T, (batch.shape[0],), device=device, dtype=torch.long)
 
@@ -267,5 +287,5 @@ if __name__ == '__main__':
     elif dataset == 'tripadvisor':
         trainset, testset = load_tripadvisor()
     
-    train_vae(trainset, testset)
+    #train_vae(trainset, testset)
     train_conditional_diffusion(trainset, testset)

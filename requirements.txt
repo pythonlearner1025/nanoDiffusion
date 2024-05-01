@@ -1,5 +1,5 @@
-huggingface
 torch
+torchvision
 sumeval
 tqdm
 transformers

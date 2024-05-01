@@ -86,7 +86,7 @@ class DDIM(nn.Module):
         # the actual quantity used in each reverse step
         self.alphas_cumprod = torch.cumprod(alphas, axis=0)
 
-        self.alphas_cumprod_prev = F.pad(self.alphas_cumprod[:-1], (1, 0), value=1.0)
+        self.alphas_cumprod_prev = nn.functional.pad(self.alphas_cumprod[:-1], (1, 0), value=1.0)
         self.sqrt_recip_alphas = torch.sqrt(1.0 / alphas)
 
         # sqrt(alpha_bar) and sqrt(1 - alpha_bar)

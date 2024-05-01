@@ -16,11 +16,11 @@ First, install dependencies:
 
 To train on FashionMNIST, run 
 
-```python image.py```
+```python imagen.py```
 
 To train on text datasets, run 
 
-```python text.py --dataset tripadvisor``` 
+```python textgen.py --dataset tripadvisor``` 
 
 The default accelerator device is ```cuda```. If you don't have a CUDA gpu, set device to ```cpu```
 
